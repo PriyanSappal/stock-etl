@@ -64,7 +64,7 @@ terraform.tfstate.backup
 # Variables
 *.tfvars
 *.auto.tfvars
-variable.tf
+variables.tf
 # The "*" ignores anything with ending specified
 
 # override files 
