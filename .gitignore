@@ -1,0 +1,72 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# Pytest / coverage
+.cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Data outputs
+data/
+etl/app/__pycache__/
+etl/app/*.parquet
+etl/app/*.csv
+
+# Secrets
+.env
+*.pem
+*.key
+*.crt
+
+# Docker
+*.log
+docker-compose.override.yml
+.parquet
+pgdata/
+app/data/
+
+# VSCode / IDE
+.vscode/
+.idea/
+*.swp
+
+# Terraform
+infra/terraform/.terraform/
+infra/terraform/.terraform.
+# Locks the provider (plugin) version so that 
+# other team members code won't break
+# Does not contain sensitive info
+# Does not need to be ignored  
+.terraform.lock.hcl
+
+# Does not contain sensitive file, just avoid blot in your remote repos
+.terraform/
+
+# Most important files to protect as they contain credentials 
+# used by Terraform
+# Make sure these state files never get pushed
+terraform.tfstate
+terraform.tfstate.backup
+
+# Variables
+*.tfvars
+*.auto.tfvars
+variable.tf
+# The "*" ignores anything with ending specified
+
+# override files 
+override.tf
+override.tf.json

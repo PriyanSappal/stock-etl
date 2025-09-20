@@ -1,0 +1,8 @@
+requests
+fastapi
+uvicorn
+pandas
+pyarrow
+psycopg2-binary
+python-dotenv
+pytest
