@@ -20,7 +20,6 @@ def run():
         logger.info("Processing symbol: %s", symbol)
 
         raw = fetcher.daily_series(symbol)  
-        logger.info("Raw API response for %s: %s", symbol, raw)
         records = daily_series_to_records(symbol, raw)
 
         out_path = save_parquet(records, filename=f"{symbol}_quotes.parquet")

@@ -14,6 +14,8 @@
     - [Considerations to making DB secure:](#considerations-to-making-db-secure)
     - [Terraform and GitHub actions](#terraform-and-github-actions)
       - [Deployment - Terraform (IaC)](#deployment---terraform-iac)
+      - [GitHub Actions CI/CD](#github-actions-cicd)
+    - [S3 + RDS + EC2 bastion server](#s3--rds--ec2-bastion-server)
   - [What does this project show?](#what-does-this-project-show)
     - [1. ETL (Extract, Transform and Load)](#1-etl-extract-transform-and-load)
     - [2. Containerisation with Docker \& Orchestration with Docker Compose](#2-containerisation-with-docker--orchestration-with-docker-compose)
@@ -108,7 +110,10 @@ docker compose up --build
 ```
 
 3. Inspect `./etl/data/` for output Parquet/CSV files.
-4. Search to access the FastAPI: **http://localhost:8000**
+4. Search to access the FastAPI: **http://localhost:8000**.
+
+![FastAPI](images/FastAPI.png)   
+
 5. You can exec into the docker container and visualise the data better with postgres. 
 ``` bash
 docker exec -it stock-etl-postgres-1 psql -U etl_user -d quotes
@@ -163,9 +168,35 @@ Increasing security and to access the RDS:
   ```hcl
   terraform plan
   ```
-  Non-destructive command to see what will be added 
+  Non-destructive command to see what will be added.
+  ```hcl
+  terraform apply
+  ```
+  Apply plan, everything this created.
 
----
+  ![Terraform apply](images/terraform-apply.png)
+  ![S3 Bucket created by Terraform](images/s3-bucket.png)
+
+  ```hcl
+  terraform destroy
+  ```
+  To get rid of all cloud resources created. 
+#### GitHub Actions CI/CD
+- [CI pipeline](.github/workflows/ci.yml) that controls tests and builds.
+- [CD pipeline](.github/workflows/deploy.yml): deployment of infra using terraform workflow.
+
+### S3 + RDS + EC2 bastion server
+
+- All the parquet files stored in S3 after running the terraform workflow through GitHub Actions CI/CD pipeline.
+![Parquet files in S3](images/parquet-in-s3.png)
+![Folders](images/Folders-s3.png)
+- Created a bash script to startup the EC2 instance. [User data](infra/bastion-user-data.sh), used in the [Terraform script](infra/main.tf).
+![Grafana on EC2](images/grafana-on-ec2.png)
+- To show the connection made between the EC2 instance and PostgreSQL (RDS).
+![RDS connection](images/rds-connection-ec2.png)
+![PostgreSQL in RDS](images/psql-in-rds.png)
+- FastAPI on EC2 via Docker, just like locally with the [User data script](infra/bastion-user-data.sh).
+![Fast API 2](images/FastAPI-2.png)
 
 ## What does this project show?
 
