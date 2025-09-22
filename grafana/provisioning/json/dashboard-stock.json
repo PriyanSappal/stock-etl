@@ -1,0 +1,55 @@
+{
+  "id": null,
+  "uid": "stocks-dashboard",
+  "title": "Stock Quotes Dashboard",
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "version": 1,
+  "refresh": "5m",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Stock Close Price",
+      "datasource": "Postgres",
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT timestamp AS \"time\", close AS \"value\", symbol FROM quotes WHERE symbol = '$symbol' ORDER BY timestamp;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "showPoints": "auto",
+            "spanNulls": true
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "symbol",
+        "type": "query",
+        "label": "Stock Symbol",
+        "datasource": "Postgres",
+        "refresh": 1,
+        "query": "SELECT DISTINCT symbol FROM quotes ORDER BY symbol;"
+      }
+    ]
+  }
+}

@@ -19,8 +19,8 @@ def test_etl_run(monkeypatch):
     monkeypatch.setattr(etl, "get_fetcher", lambda provider: DummyFetcher())
 
     # Patch loaders to avoid real writes
-    monkeypatch.setattr(etl, "save_parquet", lambda recs: "dummy.parquet")
-    monkeypatch.setattr(etl, "save_postgres", lambda recs: None)
+    monkeypatch.setattr(etl, "save_parquet", lambda *args, **kwargs: "dummy.parquet")
+    monkeypatch.setattr(etl, "save_postgres", lambda *args, **kwargs: None)
 
     # Run should succeed with dummy data
     etl.run()

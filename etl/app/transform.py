@@ -1,4 +1,4 @@
-"""Transform Alpha Vantage TIME_SERIES_DAILY output into normalized records."""
+"""Transform Alpha Vantage TIME_SERIES_DAILY output into normalised records."""
 from datetime import datetime
 
 
