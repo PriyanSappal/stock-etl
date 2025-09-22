@@ -4,7 +4,6 @@ services:
   postgres:
     image: postgres:14
     restart: always
-    profile: ["local"]
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}

@@ -36,3 +36,11 @@ output "github_actions_role_arn" {
   description = "IAM Role ARN that GitHub Actions can assume via OIDC"
   value       = aws_iam_role.github_actions_role.arn
 }
+
+# --------------------------
+# Outputs for EC2
+# --------------------------
+output "bastion_public_ip" {
+  description = "Public IP address of the Bastion EC2 instance"
+  value       = aws_instance.bastion.public_ip
+}

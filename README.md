@@ -11,7 +11,9 @@
   - [Swap API provider](#swap-api-provider)
   - [AWS S3 + RDS](#aws-s3--rds)
     - [Why?](#why)
+    - [Considerations to making DB secure:](#considerations-to-making-db-secure)
     - [Terraform and GitHub actions](#terraform-and-github-actions)
+      - [Deployment - Terraform (IaC)](#deployment---terraform-iac)
   - [What does this project show?](#what-does-this-project-show)
     - [1. ETL (Extract, Transform and Load)](#1-etl-extract-transform-and-load)
     - [2. Containerisation with Docker \& Orchestration with Docker Compose](#2-containerisation-with-docker--orchestration-with-docker-compose)
@@ -19,7 +21,7 @@
     - [4. CI/CD (GitHub Actions)](#4-cicd-github-actions)
     - [5. Data Importance](#5-data-importance)
   - [Next steps:](#next-steps)
-  - [Postgresql Commands](#postgresql-commands)
+  - [PostgreSQL Commands](#postgresql-commands)
     - [To check what is inside:](#to-check-what-is-inside)
     - [Time series check:](#time-series-check)
     - [Aggregations:](#aggregations)
@@ -97,7 +99,7 @@ This project demonstrates a small data platform: a Python ETL that fetches daily
 
 ## Quickstart (local)
 
-1. Copy `.env.example` to `.env` and set `ALPHAVANTAGE_API_KEY` (get one at **https://www.alphavantage.co/support/#api-key**).
+1. Copy `.env.example` to `.env` and set `ALPHAVANTAGE_API_KEY` (get one at **https://www.alphavantage.co/support/#api-key**). You can add different `SYMBOL`s comma-separated depending on preference in the `.env`.
 2. Build and run the ETL container locally with the FastAPI server:
 
 ```bash
@@ -124,6 +126,9 @@ For example:
 
 ![IBM Symbol Graph based on time series](images/IBM-grafana-dashboard.png)
 
+![RELIANCE.BSE - Simple Moving Average - Key Indicators](images/RELIANCE-grafana-graph.png)
+
+![Daily average close price for TSCO.LON](images/TSCO-grafana-close.png)
 
 ## CI/CD and Infra
 - `.github/workflows/ci.yml` runs tests, lint and builds Docker images.`.github/workflows/deploy.yml` will then focus on the infra part to include the terraform portion of the CI/CD pipeline.
@@ -139,12 +144,32 @@ For example:
 - Localised storage for the parquet files (clear audit history).
 - Increases the scope of the project as you could look at Machine learning, anomaly detection and assess trends and patterns in past data - **SageMaker Studio**
 
+### Considerations to making DB secure:
+Increasing security and to access the RDS:
+- Bastion is in a private subnet.
+- You connect to bastion via AWS Session Manager (not SSH).
+- Bastion SG is allowed to egress anywhere.
+- DB SG only allows inbound from bastion SG on port 5432.
+- Database is not exposed to the internet.
+
 ### Terraform and GitHub actions 
+#### Deployment - Terraform (IaC)
+- Everything is defined in [main.tf](infra/main.tf).
+- We use the usual Teraform Workflow:
+  ```hcl
+  terraform init
+  ```
+  To initialise the repo so that it is tracked by terraform and installs all the dependencies for AWS (as that is the provider).
+  ```hcl
+  terraform plan
+  ```
+  Non-destructive command to see what will be added 
+
 ---
 
 ## What does this project show?
 
-- This project is essentially a mini data platform. It covers several key data engineering concepts:
+- This project is essentially a data platform. It covers several key data engineering concepts:
 
 ### 1. ETL (Extract, Transform and Load)
 - Extract: Pulls stock price data from the AlphaVantage API (or similar financial data providers).
@@ -194,10 +219,13 @@ This is a core financial dataset — highly relevant for financial services.
 - Extend Terraform to provision ECR and an ECS/Fargate service.
 - Add GitHub Actions to build and push Docker images to ECR.
 - Convert ETL to a Prefect flow and show how to register it.
+- Have alerting on grafana, and have AWS-managed grafana for 24/7 support. Giving the user alerts, e.g. for low/high open prices.
 
 ---
 
-## Postgresql Commands
+## PostgreSQL Commands 
+
+You can use these queries in the **PostgreSQL container** and in **Grafana** (for graphs).
 
 ### To check what is inside:
 ```sql
@@ -221,12 +249,13 @@ ORDER BY timestamp DESC
 LIMIT 5;
 
 -- Daily average close price for ASX (you can always change symbol)
-SELECT DATE(to_timestamp(timestamp / 1000)) AS day,
+SELECT DATE("timestamp") AS day,
        AVG(close) AS avg_close
 FROM quotes
 WHERE symbol = 'ASX'
 GROUP BY day
 ORDER BY day;
+
 ```
 
 ### Aggregations:
@@ -248,9 +277,10 @@ ORDER BY total_volume DESC;
 
 ``` sql
 -- Compare two stocks on the same dates
-SELECT DATE(to_timestamp(timestamp / 1000)) AS day,
-       MAX(CASE WHEN symbol = 'ASX' THEN close END) AS asx_close,
-       MAX(CASE WHEN symbol = 'IBM' THEN close END) AS ibm_close
+SELECT
+    DATE("timestamp") AS day,
+    MAX(CASE WHEN symbol = 'ASX' THEN close END) AS asx_close,
+    MAX(CASE WHEN symbol = 'IBM' THEN close END) AS ibm_close
 FROM quotes
 WHERE symbol IN ('ASX', 'IBM')
 GROUP BY day
@@ -264,7 +294,7 @@ ORDER BY day;
 SELECT day,
        AVG(close) OVER (ORDER BY day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS sma_7
 FROM (
-  SELECT DATE(to_timestamp(timestamp / 1000)) AS day, close
+  SELECT DATE("timestamp") AS day, close
   FROM quotes
   WHERE symbol = 'ASX'
 ) t

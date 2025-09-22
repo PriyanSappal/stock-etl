@@ -1,0 +1,33 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - main   # runs only when code is pushed to main
+
+jobs:
+  deploy-infra:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write   # needed for OIDC
+      contents: read    # to checkout code
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: infra
+
+      - name: Terraform Plan
+        run: terraform plan
+        working-directory: infra
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: infra
