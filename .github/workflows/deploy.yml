@@ -12,6 +12,9 @@ jobs:
     permissions:
       id-token: write   # needed for OIDC
       contents: read    # to checkout code
+    defaults:
+      run:
+        working-directory: infra
 
     steps:
       - name: Checkout repo
