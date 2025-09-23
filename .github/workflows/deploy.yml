@@ -52,20 +52,7 @@ jobs:
         working-directory: infra
 
       - name: Terraform Validate
-        run: |
-          terraform validate \
-            -var "aws_region=${{ secrets.AWS_REGION }}" \
-            -var "bucket_name=${{ secrets.BUCKET_NAME }}" \
-            -var "db_name=${{ secrets.DB_NAME }}" \
-            -var "db_username=${{ secrets.DB_USERNAME }}" \
-            -var "db_password=${{ secrets.DB_PASSWORD }}" \
-            -var "api_provider=${{ secrets.API_PROVIDER }}" \
-            -var "symbol=${{ secrets.SYMBOL }}" \
-            -var "api_key=${{ secrets.API_KEY }}" \
-            -var "grafana_user=${{ secrets.GRAFANA_USER }}" \
-            -var "grafana_pass=${{ secrets.GRAFANA_PASS }}" \
-            -var "environment=dev" \
-            -var "allowed_cidr=0.0.0.0/0"
+        run: terraform validate
         working-directory: infra
 
       - name: Terraform Plan
@@ -86,18 +73,5 @@ jobs:
         working-directory: infra
 
       - name: Terraform Apply
-        run: | 
-          terraform apply -auto-approve tfplan \
-            -var "aws_region=${{ secrets.AWS_REGION }}" \
-            -var "bucket_name=${{ secrets.BUCKET_NAME }}" \
-            -var "db_name=${{ secrets.DB_NAME }}" \
-            -var "db_username=${{ secrets.DB_USERNAME }}" \
-            -var "db_password=${{ secrets.DB_PASSWORD }}" \
-            -var "api_provider=${{ secrets.API_PROVIDER }}" \
-            -var "symbol=${{ secrets.SYMBOL }}" \
-            -var "api_key=${{ secrets.API_KEY }}" \
-            -var "grafana_user=${{ secrets.GRAFANA_USER }}" \
-            -var "grafana_pass=${{ secrets.GRAFANA_PASS }}" \
-            -var "environment=dev" \
-            -var "allowed_cidr=0.0.0.0/0"
+        run: terraform apply -auto-approve tfplan
         working-directory: infra
