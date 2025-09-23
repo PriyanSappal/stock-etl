@@ -42,24 +42,7 @@ jobs:
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
-      
-      - name: Create tfvars file
-        run: |
-          cat <<EOF > infra/secrets.auto.tfvars
-          aws_region  = "${{ secrets.AWS_REGION }}"
-          bucket_name = "${{ secrets.BUCKET_NAME }}"
-          db_name     = "${{ secrets.DB_NAME }}"
-          db_username = "${{ secrets.DB_USERNAME }}"
-          db_password = "${{ secrets.DB_PASSWORD }}"
-          api_provider = "${{ secrets.API_PROVIDER }}"
-          symbol      = "${{ secrets.SYMBOL }}"
-          api_key     = "${{ secrets.API_KEY }}"
-          grafana_user = "${{ secrets.GRAFANA_USER }}"
-          grafana_pass = "${{ secrets.GRAFANA_PASS }}"
-          environment = "dev"
-          allowed_cidr = "0.0.0.0/0"
-          EOF
-
+        
       - name: Terraform Init
         run: terraform init
         working-directory: infra
@@ -69,13 +52,49 @@ jobs:
         working-directory: infra
 
       - name: Terraform Validate
-        run: terraform validate
+        run: terraform validate \
+            -var "aws_region=${{ secrets.AWS_REGION }}" \
+            -var "bucket_name=${{ secrets.BUCKET_NAME }}" \
+            -var "db_name=${{ secrets.DB_NAME }}" \
+            -var "db_username=${{ secrets.DB_USERNAME }}" \
+            -var "db_password=${{ secrets.DB_PASSWORD }}" \
+            -var "api_provider=${{ secrets.API_PROVIDER }}" \
+            -var "symbol=${{ secrets.SYMBOL }}" \
+            -var "api_key=${{ secrets.API_KEY }}" \
+            -var "grafana_user=${{ secrets.GRAFANA_USER }}" \
+            -var "grafana_pass=${{ secrets.GRAFANA_PASS }}" \
+            -var "environment=dev" \
+            -var "allowed_cidr=0.0.0.0/0"
         working-directory: infra
 
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
+        run: terraform plan -out=tfplan \
+            -var "aws_region=${{ secrets.AWS_REGION }}" \
+            -var "bucket_name=${{ secrets.BUCKET_NAME }}" \
+            -var "db_name=${{ secrets.DB_NAME }}" \
+            -var "db_username=${{ secrets.DB_USERNAME }}" \
+            -var "db_password=${{ secrets.DB_PASSWORD }}" \
+            -var "api_provider=${{ secrets.API_PROVIDER }}" \
+            -var "symbol=${{ secrets.SYMBOL }}" \
+            -var "api_key=${{ secrets.API_KEY }}" \
+            -var "grafana_user=${{ secrets.GRAFANA_USER }}" \
+            -var "grafana_pass=${{ secrets.GRAFANA_PASS }}" \
+            -var "environment=dev" \
+            -var "allowed_cidr=0.0.0.0/0"
         working-directory: infra
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan
+        run: terraform apply -auto-approve tfplan \
+            -var "aws_region=${{ secrets.AWS_REGION }}" \
+            -var "bucket_name=${{ secrets.BUCKET_NAME }}" \
+            -var "db_name=${{ secrets.DB_NAME }}" \
+            -var "db_username=${{ secrets.DB_USERNAME }}" \
+            -var "db_password=${{ secrets.DB_PASSWORD }}" \
+            -var "api_provider=${{ secrets.API_PROVIDER }}" \
+            -var "symbol=${{ secrets.SYMBOL }}" \
+            -var "api_key=${{ secrets.API_KEY }}" \
+            -var "grafana_user=${{ secrets.GRAFANA_USER }}" \
+            -var "grafana_pass=${{ secrets.GRAFANA_PASS }}" \
+            -var "environment=dev" \
+            -var "allowed_cidr=0.0.0.0/0"
         working-directory: infra
