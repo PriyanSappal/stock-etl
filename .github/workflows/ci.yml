@@ -34,6 +34,7 @@ jobs:
 
       - name: List repo contents
         run: ls -al
+
       # Set up Python in repo root
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -49,6 +50,13 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
         working-directory: etl
+        
+      # Load environment variables from .env.example
+      - name: Load environment variables
+        run: |
+          set -a
+          source .env.example
+          set +a
 
       # Wait for Postgres
       - name: Wait for Postgres
