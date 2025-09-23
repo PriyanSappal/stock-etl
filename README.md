@@ -181,8 +181,11 @@ Increasing security and to access the RDS:
   terraform destroy
   ```
   To get rid of all cloud resources created. 
+  ![Terraform destroy](images/terraform-destroy.png)
+
 #### GitHub Actions CI/CD
 - [CI pipeline](.github/workflows/ci.yml) that controls tests and builds.
+![CI pipeline](images/ci-pipeline.png)
 - [CD pipeline](.github/workflows/deploy.yml): deployment of infra using terraform workflow.
 
 ### S3 + RDS + EC2 bastion server
