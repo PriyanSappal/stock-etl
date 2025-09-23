@@ -50,7 +50,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
         working-directory: etl
-        
+
       # Load environment variables from .env.example
       - name: Load environment variables
         run: |
@@ -68,8 +68,16 @@ jobs:
 
       # Run tests
       - name: Run ETL unit tests
-        run: pytest -v
+        run: |
+          set -a
+          source .env.example
+          set +a 
+          pytest -v
 
       # Build Docker images (assumes docker-compose.yml is in root)
       - name: Build Docker images
-        run: docker compose build
+        run: |
+          set -a
+          source .env.example
+          set +a
+          docker compose build
