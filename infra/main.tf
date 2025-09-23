@@ -41,12 +41,12 @@ resource "aws_iam_role" "github_actions_role" {
 resource "aws_iam_policy" "terraform_policy" {
   name        = "TerraformPolicy"
   description = "Permissions for Terraform GitHub Actions pipeline"
-  policy      = jsonencode({
+  policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Effect   = "Allow"
-        Action   = [
+        Effect = "Allow"
+        Action = [
           "s3:*",
           "rds:*",
           "ec2:Describe*",
@@ -124,19 +124,19 @@ resource "aws_s3_bucket_public_access_block" "quotes" {
 # RDS PostgreSQL instance
 # --------------------------
 resource "aws_db_instance" "quotes" {
-  allocated_storage    = 20
-  engine               = "postgres"
-  engine_version       = "14"
-  instance_class       = "db.t3.micro"
-  username             = var.db_username
-  password             = var.db_password
-  multi_az             = false
-  deletion_protection  = false
-  publicly_accessible  = false
-  skip_final_snapshot  = true
+  allocated_storage   = 20
+  engine              = "postgres"
+  engine_version      = "14"
+  instance_class      = "db.t3.micro"
+  username            = var.db_username
+  password            = var.db_password
+  multi_az            = false
+  deletion_protection = false
+  publicly_accessible = false
+  skip_final_snapshot = true
 
   vpc_security_group_ids = [aws_security_group.db.id]
-  db_subnet_group_name = aws_db_subnet_group.quotes.name
+  db_subnet_group_name   = aws_db_subnet_group.quotes.name
 }
 
 # --------------------------
@@ -149,19 +149,19 @@ resource "aws_instance" "bastion" {
   vpc_security_group_ids      = [aws_security_group.bastion.id]
   associate_public_ip_address = true
   depends_on                  = [aws_db_instance.quotes]
-  iam_instance_profile = aws_iam_instance_profile.ssm_instance_profile.name
+  iam_instance_profile        = aws_iam_instance_profile.ssm_instance_profile.name
   user_data = templatefile("bastion-user-data.sh", {
-  db_username  = var.db_username
-  db_password  = var.db_password
-  db_port      = var.db_port
-  db_name      = var.db_name
-  db_endpoint  = aws_db_instance.quotes.endpoint
-  bucket_name  = var.bucket_name
-  api_provider = var.api_provider
-  symbol       = var.symbol
-  api_key      = var.api_key
-  grafana_pass = var.grafana_pass
-  grafana_user = var.grafana_user
+    db_username  = var.db_username
+    db_password  = var.db_password
+    db_port      = var.db_port
+    db_name      = var.db_name
+    db_endpoint  = aws_db_instance.quotes.endpoint
+    bucket_name  = var.bucket_name
+    api_provider = var.api_provider
+    symbol       = var.symbol
+    api_key      = var.api_key
+    grafana_pass = var.grafana_pass
+    grafana_user = var.grafana_user
   })
   tags = {
     Name = "session-bastion"
@@ -309,9 +309,9 @@ resource "aws_security_group" "db" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
     security_groups = [aws_security_group.bastion.id] # only the bastion server.
   }
 
